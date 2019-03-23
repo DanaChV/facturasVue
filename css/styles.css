@@ -1,0 +1,59 @@
+body{
+	
+}
+.c-login{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1001;
+	background: white;
+}
+
+#fondo{
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+}
+
+.c-login .container{
+	position: absolute;
+	width: 30%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #ffffffe6;
+	border-radius: 3px;
+	box-shadow: 1px 1px 10px #f1f1f1;
+}
+
+img{
+	width:50%;
+	margin:0px auto;
+	display:block;
+}
+
+#user{
+	margin: 0px;
+	padding: 0px;
+	width: 10%;
+}
+
+.app-form input{
+    border-radius: 0;
+}
+
+.taskDone {
+    text-decoration: line-through;
+}
+
+@media (max-width: 768px){
+	.c-login .container{
+		position: relative;
+		width: 100%;
+		left: 0;
+		top: 0;
+		transform: none;
+}
+}

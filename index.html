@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Mi Primer Vue.js</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+	 <!--id de la aplicacion 1 para poder insertar los elementos-->
+	<div class="container" id="app">
+		<!--Vista 1 - Inicio de Sesión-->
+		<div class="c-login" v-show="!login.validado">
+			<img id="fondo" v-bind:src="img.imagen"/>
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-12">
+						<img v-bind:src="img.imagen2" />
+						<h1 class="text-center">Inicio de Sesión</h1>
+						<div class="alert" :class="'alert-' + login.mensaje.clase">
+							<p>{{ login.mensaje.texto }}</p>
+						</div>
+						<!--Formulario de Inicio de Sesion-->
+						<form action="" @submit.prevent="validarUsuario">
+							<div class="form-group">
+								<label for="" class="control-label">Usuario:</label>
+								<div class="controls">
+									<input type="text" class="form-control"
+									required v-model="login.usuario" autofocus>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="control-label">Contraseña:</label>
+								<div class="controls">
+									<input type="password" class="form-control" required v-model="login.contrasena">
+								</div>
+							</div>
+							<div class="text-center form-group">
+								<button type="submit" class="btn btn-primary">Ingresar</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--Vista 2 - Inicio Tienda - Productos-->
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<h1 class="text-center">Tienda Virtual - Cursos JavaScript</h1>
+				<h1 class="text-left">
+					<small>Bienvenido, {{ login.usuario }}</small>
+					<span class="pull-right">
+						<button class="btn btn-danger btn-xs" @click="login.validado = false">Cerrar sesión</button>
+					</span>
+				</h1>
+				<div class="form-group">
+					<label for="" class="control-label">Añadir Producto</label>
+					<select class="form-control" v-model="tienda.productoSeleccionado.producto"
+					@change="infoProductoSeleccionado">
+						<option value="">-- Seleccionar Producto --</option>
+						<option v-for="producto in productos" :value="producto.producto">
+							{{ producto.descripcion }}
+						</option>
+					</select>
+				</div>
+				<div class="panel panel-default" v-show="tienda.productoSeleccionado.producto != ''">
+					<div class="panel-heading">
+						<h3 class="panel-title">Información del producto seleccionado</h3>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-sm-2">
+								<img :src="'http://lorempixel.com/90/90/abstract/' + tienda.productoSeleccionado.producto" class="img-responsive img-rounded" align="left">
+							</div>
+							<div class="col-sm-10">
+								<p>
+									<strong>Código: </strong> {{ tienda.productoSeleccionado.producto || '' }}
+								</p>
+								<p>
+									<strong>Descripción: </strong> {{ tienda.productoSeleccionado.descripcion || '' }}
+								</p>
+								<p>
+									<strong>Precio: </strong> {{ tienda.productoSeleccionado.precio || '' }}
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<div class="row">
+							<div class="col-sm-3">
+								<label for="" class="control-label">Cantidad:</label>
+							</div>
+							<div class="col-sm-6">
+								<input type="number" min="1" v-model="tienda.productoSeleccionado.cantidad" class="form-control col-sm-6 input-sm" required>
+							</div>
+							<div class="col-sm-3 text-right">
+								<button class="btn btn-primary" @click="agregarLinea">Agregar</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<hr>
+				<div class="table-responsive">
+					<!--Tabla de datos-->
+					<table class="table table-hover table-striped">
+						<thead>
+							<tr>
+								<th>Código</th>
+								<th>Descripción</th>
+								<th>Precio</th>
+								<th>Cantidad</th>
+								<th>Total línea</th>
+								<th>&nbsp;</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-show="!tienda.productosAgregados.length">
+								<td colspan="6">
+									<p class="text-center">
+										<em>
+											No se han agregado productos a la factura actual
+										</em>
+									</p>
+								</td>
+							</tr>
+							<tr v-for="(linea, indice) in tienda.productosAgregados">
+								<td>{{ linea.producto }}</td>
+								<td>{{ linea.descripcion }}</td>
+								<td>{{ linea.precio }}</td>
+								<td width="100">
+									<input type="number" min="1" class="form-control input-sm" v-model="linea.cantidad">
+								</td>
+								<td>{{linea.cantidad * linea.precio }}</td>
+								<td class="text-right">
+									<button class="btn btn-xs btn-danger" title="Eliminar línea" @click="eliminarLinea(indice)">&times;</button>
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="5" class="text-left">
+									<strong>Total de la compra:</strong>
+								</td>
+								<td>
+									<strong>{{ totalLineas }}</strong>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr>
+<!--Vista 3 - Inicio Tienda - Notas-->
+	<div class="container">
+		<!--id de la aplicacion 2-->
+      	<div id="taskApp" class="col-sm-8 col-sm-offset-2">
+      		<h1 class="text-center">Notas</h1>
+      		<!--Formulario de Notas-->
+      		<form v-on:submit="addTask" class="app-form">
+            	<label for="" class="control-label">Añadir nueva tarea</label>
+              	<input type="text" class="form-control" v-model="tasks.title">
+              	<div class="text-right">					
+              		<input type="submit" value="Añadir" class="btn btn-primary" style="margin-top: 15px; width: auto;">
+              	</div>
+          	</form>
+          	<hr>
+			<div class="table-responsive">
+	        	<!--Tabla de datos-->
+	        	<table class="table table-hover table-striped">
+	          		<thead>
+	            		<tr>
+			              <th>Listo/Pendiente</th>
+			              <th>Nombre de la Tarea</th>
+			              <th>Operacion</th>
+			            </tr>
+	          		</thead>
+	          		<tbody>
+	            		<tr v-for="task in tasks">
+	              			<td>
+	                			<input type="checkbox" v-model="task.done">
+	              			</td>
+				              <td>
+				                <span :class="{taskDone: task.done}">
+				                  {{ task.title }}
+				                </span>
+				              </td>
+				            <td>
+				                <button
+				                  v-on:click="deleteTask(task)"
+				                  class="btn btn-block btn-danger">
+				                  Eliminar Tarea
+				                </button>
+	              			</td>
+	            		</tr>
+	          		</tbody>
+	        	</table>
+	        </div>
+      </div>
+    </div>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/vue@2.4.2"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
